@@ -1,24 +1,22 @@
-// run the boiler-plate express app 
-import express from "express";
-// enable use of .env file
-import dotenv from "dotenv";
+import express from "express";  // run the boiler-plate express app 
+import dotenv from "dotenv";    // enable use of .env file
+import cookieParser from "cookie-parser";   // for parsing cookies
 
-// import routes
-import authRoutes from "./routes/auth.routes.js";
+import authRoutes from "./routes/auth.routes.js";   // import routes
+import connectMongoDB from './db/connectMongoDB.js';    // import for MongoDB connection
 
-// import for MongoDB connection
-import connectMongoDB from './db/connectMongoDB.js';
+dotenv.config();    // get config from .env file
 
-// get config from .env file
-dotenv.config();
+const app = express();  // define express app
+const PORT = process.env.PORT || 5000;  // define port
 
-// define express app
-const app = express();
-// define port
-const PORT = process.env.PORT || 5000;
+app.use(express.json());    // use json middleware for parsing application/json
+app.use(express.urlencoded({ extended: true }));    // use url encoding middleware to parse form data
+
+app.use(cookieParser());    // use function to parse cookies
 
 // use routes
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes);   // route for authentication
 
 
 // start server

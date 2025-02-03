@@ -1,11 +1,23 @@
+// import packages
 import express from "express";  // run the boiler-plate express app 
 import dotenv from "dotenv";    // enable use of .env file
 import cookieParser from "cookie-parser";   // for parsing cookies
+import {v2 as cloudinary} from "cloudinary";    // for cloudinary
+// import routes
+import authRoutes from "./routes/auth.routes.js";   // import auth routes
+import userRoutes from "./routes/user.routes.js";   // import user routes
 
-import authRoutes from "./routes/auth.routes.js";   // import routes
+// import utility functions
 import connectMongoDB from './db/connectMongoDB.js';    // import for MongoDB connection
 
+
 dotenv.config();    // get config from .env file
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const app = express();  // define express app
 const PORT = process.env.PORT || 5000;  // define port
@@ -17,7 +29,7 @@ app.use(cookieParser());    // use function to parse cookies
 
 // use routes
 app.use("/api/auth", authRoutes);   // route for authentication
-
+app.use("/api/users", userRoutes);  // route for user
 
 // start server
 app.listen(PORT, () => {

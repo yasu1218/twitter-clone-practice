@@ -4,9 +4,9 @@ import dotenv from "dotenv";    // enable use of .env file
 import cookieParser from "cookie-parser";   // for parsing cookies
 import {v2 as cloudinary} from "cloudinary";    // for cloudinary
 // import routes
-import authRoutes from "./routes/auth.routes.js";   // import auth routes
-import userRoutes from "./routes/user.routes.js";   // import user routes
-import postRoutes from "./routes/post.routes.js";   // import post routes
+import authRoutes from "./routes/auth.route.js";   // import auth routes
+import userRoutes from "./routes/user.route.js";   // import user routes
+import postRoutes from "./routes/post.route.js";   // import post routes
 
 // import utility functions
 import connectMongoDB from './db/connectMongoDB.js';    // import for MongoDB connection

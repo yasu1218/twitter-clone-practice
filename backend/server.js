@@ -6,6 +6,7 @@ import {v2 as cloudinary} from "cloudinary";    // for cloudinary
 // import routes
 import authRoutes from "./routes/auth.routes.js";   // import auth routes
 import userRoutes from "./routes/user.routes.js";   // import user routes
+import postRoutes from "./routes/post.routes.js";   // import post routes
 
 // import utility functions
 import connectMongoDB from './db/connectMongoDB.js';    // import for MongoDB connection
@@ -30,6 +31,7 @@ app.use(cookieParser());    // use function to parse cookies
 // use routes
 app.use("/api/auth", authRoutes);   // route for authentication
 app.use("/api/users", userRoutes);  // route for user
+app.use("/api/posts", postRoutes);  // route for post
 
 // start server
 app.listen(PORT, () => {

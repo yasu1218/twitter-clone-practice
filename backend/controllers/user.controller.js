@@ -75,7 +75,7 @@ export const followUnfollowUser = async (req, res) => {
                 to: userToModify._id,
             });
             await newNotification.save();   // register in database
-            // TODO: return the id of the user as a response.
+            // TODO: return the id of the user as a response --> we actually don't need this..
             res.status(200).json({ message: "User followed successfully" });
         }
 

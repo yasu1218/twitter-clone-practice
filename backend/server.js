@@ -24,7 +24,11 @@ cloudinary.config({
 const app = express();  // define express app
 const PORT = process.env.PORT || 5000;  // define port
 
-app.use(express.json());    // use json middleware for parsing application/json
+// use json middleware for parsing application/json. 
+//      added option to handle up to 5mb for img files (default=100kb?) 
+//      note: making this too large will make the service prone to DoS attacks!
+app.use(express.json({limit:"5mb"}));    
+
 app.use(express.urlencoded({ extended: true }));    // use url encoding middleware to parse form data
 
 app.use(cookieParser());    // use function to parse cookies

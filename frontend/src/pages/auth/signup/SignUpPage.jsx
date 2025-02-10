@@ -10,8 +10,13 @@ import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 
+import { useMutation } from "@tanstack/react-query";
+
+import toast from "react-hot-toast";
+
 const SignUpPage = () => {
-    // form data
+
+	// Sign up form data
 	const [formData, setFormData] = useState({
 		email: "",
 		username: "",
@@ -19,10 +24,48 @@ const SignUpPage = () => {
 		password: "",
 	});
 
-    // event handler to handle submit    
+	// define mutation to manipulate data for signup
+	// Note: useQuery(); // for getting data. 
+	const { 
+		mutate: signUpMutation, 
+		isError, 
+		isPending, 
+		error
+	} = useMutation({
+		mutationFn: async({ email, username, fullName, password }) => {
+			try {
+				const res = await fetch("/api/auth/signup", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ email, username, fullName, password }),
+				});
+				
+				const data = await res.json();
+				if(!res.ok) throw new Error(data.error || "Failed to create account");
+
+				console.log(data);
+				return data;
+
+			} catch (error) {
+				console.error(error);
+				throw error;		
+			}
+		},
+		onSuccess: () => {
+			toast.success("Account created successfully");
+		},
+		onError: () => {
+			toast.error("Failed creating account");
+		}
+	});
+
+    // event handler to handle submit for signup
 	const handleSubmit = (e) => {
-		e.preventDefault();
-		console.log(formData);
+		e.preventDefault();	// prevent page from refreshing automatically. 
+		// console.log(formData);
+		signUpMutation(formData);	// call to mutation funciton
 	};
 
     // event handler to update states
@@ -30,7 +73,7 @@ const SignUpPage = () => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	const isError = false;
+	// const isError = false;
 
 	return (
 		<div className='max-w-screen-xl mx-auto flex h-screen px-10'>
@@ -87,8 +130,10 @@ const SignUpPage = () => {
 							value={formData.password}
 						/>
 					</label>
-					<button className='btn rounded-full btn-primary text-white'>Sign up</button>
-					{isError && <p className='text-red-500'>Something went wrong</p>}
+					<button className='btn rounded-full btn-primary text-white'>
+						{/* Change display of "Sign up" depending on state */ isPending ? "Loading..." : "Sign up"}
+					</button>
+					{isError && <p className='text-red-500'>{error.message}</p>}
 				</form>
 				<div className='flex flex-col lg:w-2/3 gap-2 mt-4'>
 					<p className='text-white text-lg'>Already have an account?</p>

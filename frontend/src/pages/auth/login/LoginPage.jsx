@@ -6,22 +6,69 @@ import XSvg from "../../../components/svgs/X";
 import { MdOutlineMail } from "react-icons/md";
 import { MdPassword } from "react-icons/md";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import toast from "react-hot-toast";
+
+
 const LoginPage = () => {
+
+	// Login form data
 	const [formData, setFormData] = useState({
 		username: "",
 		password: "",
 	});
 
+	const queryClient = useQueryClient();
+
+	// Mutation for Login
+	const { 
+		mutate:loginMutation, 
+		isPending, 
+		isError, 
+		error 
+	} = useMutation({
+		mutationFn: async({ username, password}) => {
+			try {
+				const res = await fetch("/api/auth/login", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify( { username, password }),
+				});
+
+				const data = await res.json();
+
+				if(!res.ok) {
+					throw new Error(data.error || "Something went wrong");
+				}
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
+		onSuccess: () => {
+			toast.success("Login successful");
+			// refetch authUser
+			queryClient.invalidateQueries({ queryKey: ["authUser"] });
+		},
+		onError: () => {
+			toast.error("Login failed");
+		}
+	});
+
+	// Event handler for Login
 	const handleSubmit = (e) => {
-		e.preventDefault();
-		console.log(formData);
+		e.preventDefault();		// prevent default reload
+		// console.log(formData);
+		loginMutation(formData);	// call to login mutation
 	};
 
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	const isError = false;
+	// const isError = false;	// For UI designing - commented out after implementation of mutation
 
 	return (
 		<div className='max-w-screen-xl mx-auto flex h-screen'>
@@ -55,8 +102,12 @@ const LoginPage = () => {
 							value={formData.password}
 						/>
 					</label>
-					<button className='btn rounded-full btn-primary text-white'>Login</button>
-					{isError && <p className='text-red-500'>Something went wrong</p>}
+					<button className='btn rounded-full btn-primary text-white'>
+						{isPending ? "Loading..." : "Login"}
+					</button>
+					{isError && <p className='text-red-500'>
+						{error.message}
+						</p>}
 				</form>
 				<div className='flex flex-col gap-2 mt-4'>
 					<p className='text-white text-lg'>{"Don't"} have an account?</p>

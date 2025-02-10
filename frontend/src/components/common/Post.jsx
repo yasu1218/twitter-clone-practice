@@ -10,6 +10,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { toast } from "react-hot-toast";
 import LoadingSpinner from "./LoadingSpinner";
+import { formatPostDate } from "../../utils/date";
 
 
 const Post = ({ post }) => {
@@ -20,6 +21,20 @@ const Post = ({ post }) => {
 
 	const queryClient = useQueryClient();
 
+	const postOwner = post.user;
+
+	//const isLiked = true;
+	const isLiked = post.likes.includes(authUser._id);
+
+	//const isMyPost = true;
+	const isMyPost = authUser._id === post.user._id;
+
+	// const formattedDate = "1h";
+	const formattedDate = formatPostDate(post.createdAt);
+
+	// const isCommenting = false;	// this is for UI design, to be deleted.
+	
+	
 	// Mutation for post deletion
 	const { 
 		mutate:deletePost, 
@@ -50,11 +65,7 @@ const Post = ({ post }) => {
 		}
 	});
 
-	const postOwner = post.user;
-
-	//const isLiked = true;
-	const isLiked = post.likes.includes(authUser._id);
-
+	// Mutation for like/unlike posts
 	const { 
 		mutate:likePost,
 		isPending:isLiking
@@ -75,7 +86,7 @@ const Post = ({ post }) => {
 		},
 		onSuccess: (updatedLikes) => {
 			// toast.success("Post liked successfully");
-			
+
 			// this is not the best UX because it will fetch all posts
 			// queryClient.invalidateQueries({ queryKey: ["posts"] });
 
@@ -94,19 +105,53 @@ const Post = ({ post }) => {
 		},
 	 });
 
-	//const isMyPost = true;
-	const isMyPost = authUser._id === post.user._id;
+	// Mutation for commenting on posts
+	const {
+		mutate: commentPost,
+		isPending: isCommenting
+	} = useMutation({
+		mutationFn: async () => {
+			try {
+				const res = await fetch(`/api/posts/comment/${post._id}`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ text: comment }),
+				});
 
-	const formattedDate = "1h";
+				const data = await res.json;
 
-	const isCommenting = false;
+				if(!res.ok) {
+					throw new Error(data.error || "Something went wrong");
+				}
+
+				return data;
+
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
+		onSuccess: ()=> {
+			toast.success("Comment posted successfully");
+			setComment("");
+			queryClient.invalidateQueries( { queryKey: ["posts"] })
+		},
+		onError: (error) => {
+			toast.error(error.message);
+		}
+	})
+
 
 	const handleDeletePost = () => {
 		deletePost();
 	};
 
+	// Handle comment post
 	const handlePostComment = (e) => {
 		e.preventDefault();
+		if (isCommenting) return;
+		commentPost();	// call mutation
 	};
 
 	const handleLikePost = () => {

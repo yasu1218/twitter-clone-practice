@@ -1,4 +1,5 @@
 // import packages
+import path from "path";    // path package (builtin node module)
 import express from "express";  // run the boiler-plate express app 
 import dotenv from "dotenv";    // enable use of .env file
 import cookieParser from "cookie-parser";   // for parsing cookies
@@ -23,6 +24,7 @@ cloudinary.config({
 
 const app = express();  // define express app
 const PORT = process.env.PORT || 5000;  // define port
+const __dirname = path.resolve(path.dirname(""));
 
 // use json middleware for parsing application/json. 
 //      added option to handle up to 5mb for img files (default=100kb?) 
@@ -38,6 +40,16 @@ app.use("/api/auth", authRoutes);   // route for authentication
 app.use("/api/users", userRoutes);  // route for user
 app.use("/api/posts", postRoutes);  // route for post
 app.use("/api/notifications", notificationRoutes);  // route for notifications
+
+// set path for frontend access
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "/frontend/dist")));    // for production, user should be directed to the frontend dist folder that gets built
+    
+    // if this is the production environment, and if none of the endpoints defined earlier gets hit, then show the react application
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html")); 
+    })
+}
 
 // start server
 app.listen(PORT, () => {

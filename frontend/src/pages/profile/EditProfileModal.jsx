@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
 
 const EditProfileModal = ({ authUser }) => {
 
@@ -16,6 +16,7 @@ const EditProfileModal = ({ authUser }) => {
 		currentPassword: "",
 	});
 
+	/*	Deleting the mutate function - moved to the useUpdateUserProfile hook. 
 	// Mutate function for updating the user profile information. 
 	const {
 		mutate:updateProfile,
@@ -52,6 +53,9 @@ const EditProfileModal = ({ authUser }) => {
 			toast.error(error.message);
 		}
 	});
+	*/
+	// get function and loading state from hook
+	const { updateProfile, isUpdatingProfile } = useUpdateUserProfile();
 
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -88,7 +92,7 @@ const EditProfileModal = ({ authUser }) => {
 						onSubmit={(e) => {
 							e.preventDefault();
 							//alert("Profile updated successfully");
-							updateProfile();
+							updateProfile(formData);
 						}}
 					>
 						<div className='flex flex-wrap gap-2'>

@@ -12,10 +12,10 @@ import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { formatMemberSinceDate } from "../../utils/date";
 import useFollow from "../../hooks/useFollow";
-import toast from "react-hot-toast";
+import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
 
 const ProfilePage = () => {
 
@@ -77,6 +77,7 @@ const ProfilePage = () => {
 		},
 	});
 
+	/*	Deleting the mutate function - moved to the useUpdateUserProfile hook. 
 	// Mutate function for updating the user profile image and cover image. (** Other profiles are handled in the edit profile modal.)
 	const {
 		mutate:updateProfile,
@@ -116,6 +117,11 @@ const ProfilePage = () => {
 			toast.error(error.message);
 		}
 	});
+	*/
+
+	// get function and loading state from hook
+	const { updateProfile, isUpdatingProfile } = useUpdateUserProfile();
+
 
 
 	// const isMyProfile = true;
@@ -219,7 +225,12 @@ const ProfilePage = () => {
 								{(coverImg || profileImg) && (
 									<button
 										className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
-										onClick={() => updateProfile()/*alert("Profile updated successfully")*/ }
+										onClick={ async () => {
+											await updateProfile({ coverImg, profileImg })
+											/*alert("Profile updated successfully")*/
+											setProfileImg(null);	// reset input to null after updating is complete.
+											setCoverImg(null);	// reset input to null after updating is complete.
+										}}
 									>
 										{isUpdatingProfile ? "Updating..." : "Update"}
 									</button>

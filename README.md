@@ -1,4 +1,4 @@
-# twitter-clone-practice
+# twitter-replica
 
 Practice for MERN stack
 
@@ -37,11 +37,11 @@ Other Tools: GitHub, VS Code
 
 Clone the repository:
 
-git clone https://github.com/yasu1218/twitter-clone-practice
+git clone https://github.com/yasu1218/twitter-replica
 
 Navigate to the project folder:
 
-cd twitter-clone-practice
+cd twitter-replica
 
 Install dependencies:
 

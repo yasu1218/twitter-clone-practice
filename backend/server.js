@@ -24,7 +24,7 @@ cloudinary.config({
 
 const app = express();  // define express app
 const PORT = process.env.PORT || 5000;  // define port
-const __dirname = path.resolve(path.dirname(""));
+const __dirname = path.resolve();
 
 // use json middleware for parsing application/json. 
 //      added option to handle up to 5mb for img files (default=100kb?) 

@@ -23,7 +23,7 @@ function App() {
 		isError, 
 		error 
 	} = useQuery({
-		queryKey: ['authUser'],	// Providing unique name to query to reference later. 
+		queryKey: ["authUser"],	// Providing unique name to query to reference later. 
 		queryFn: async() => {
 			try {
 				const res = await fetch("/api/auth/me");
